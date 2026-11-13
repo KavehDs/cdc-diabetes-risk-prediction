@@ -48,6 +48,51 @@ for everyone would look 84% accurate and be useless.
 Reproduce: `python src/train.py` — it prints these numbers and writes
 `metrics.json` plus the plots in `plots/`.
 
+## Modern baseline comparison (TabICLv2)
+
+We also tested a modern tabular foundation model as an extra
+comparison — **TabICLv2** (`tabicl.TabICLClassifier`, default
+checkpoint `tabicl-classifier-v2-20260212.ckpt`). It conditions on the
+training rows in a single forward pass (in-context learning) instead
+of training weights. Because the full-size run does not fit this
+machine's memory, the comparison uses a stratified subsample: 6,000
+rows drawn from the full dataset, split 5,000 train / 1,000 test
+(`random_state=42`). The same subsample, split and metrics were used
+for a multinomial Logistic Regression baseline. A 10,000/2,000
+subsample was tried first and the run was killed by the Linux OOM
+killer during TabICL prediction on this 1.5-CPU / 6 GB machine, so
+the numbers below are from the 5,000/1,000 run.
+
+| Model (subsample, test n = 1,000) | Accuracy | Macro-F1 | OvR ROC-AUC (macro) | Brier | Predict time |
+|---|---|---|---|---|---|
+| TabICLv2 | 0.842 | 0.378 | 0.736 | 0.078 | 18 min |
+| Logistic Regression | 0.583 | 0.375 | 0.721 | 0.178 | < 1 s |
+
+The honest reading: it is a statistical tie on macro-F1 (0.378 vs
+0.375) with a small OvR AUC edge for TabICLv2 — but TabICLv2
+predicted "prediabetes" for **nobody** (recall 0.0 on 18 test cases)
+and found only 14% of diabetes cases, while the class-weighted
+Logistic Regression found 53% of diabetes cases and 11% of
+prediabetes. TabICLv2 has no class weighting, so on this extremely
+imbalanced problem it collapses toward the majority class, and its
+low Brier score mostly reflects conservative probabilities, not
+better detection. It also took 18 minutes to predict 1,000 rows
+versus under a second for Logistic Regression. A newer model is not
+automatically a better model for this problem — running the
+comparison is the point.
+
+Reproduce: `python src/foundation_comparison.py` (needs the optional
+`tabicl` dependency; the checkpoint is downloaded at runtime and is
+not bundled in this repository).
+
+**Licence:** TabICLv2 is used under the **BSD 3-Clause License,
+Copyright (c) 2025, Soda team @ Inria** — a permissive open-source
+licence with no use-case restrictions, verified in the installed
+`tabicl` 2.2.0 package LICENSE file. Project:
+https://github.com/soda-inria/tabicl. TabPFN-3/3.5 was deliberately
+**not** used: its weights carry a non-commercial licence. No model
+weights are bundled in this repository.
+
 ![ROC curves](plots/roc_curves.svg)
 ![Confusion matrix](plots/confusion_matrix.svg)
 ![Top drivers](plots/shap_top_drivers.svg)
@@ -145,7 +190,9 @@ health indicators you enter — with the same not-a-diagnosis disclaimer.
 │   └── shap_top_drivers.svg
 ├── requirements.txt
 └── src/
-    └── train.py            # loading, training, evaluation, fairness, SHAP
+    ├── train.py            # loading, training, evaluation, fairness, SHAP
+    ├── foundation_comparison.py  # TabICLv2 vs Logistic Regression (subsample)
+    └── download_checkpoint.py   # downloads the TabICLv2 checkpoint (not bundled)
 ```
 
 ## Limitations

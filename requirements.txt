@@ -6,3 +6,9 @@ lightgbm>=4.0
 shap>=0.44
 matplotlib>=3.8
 streamlit>=1.32
+
+# Optional: only needed for src/foundation_comparison.py (TabICLv2 comparison).
+# tabicl==2.2.0 pulls in torch (CPU). BSD 3-Clause License,
+# Copyright (c) 2025, Soda team @ Inria — https://github.com/soda-inria/tabicl
+# The TabICLv2 checkpoint (~110 MB) is downloaded at runtime, never bundled.
+# tabicl==2.2.0

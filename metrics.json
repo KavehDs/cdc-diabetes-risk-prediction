@@ -352,5 +352,85 @@
       "mean_abs_shap": 0.032
     }
   ],
-  "shap_model": "LightGBM"
+  "shap_model": "LightGBM",
+  "foundation_model_comparison": {
+    "model": "TabICLv2 (tabicl.TabICLClassifier, default checkpoint tabicl-classifier-v2-20260212.ckpt)",
+    "package": "tabicl 2.2.0",
+    "license": "BSD 3-Clause License, Copyright (c) 2025, Soda team @ Inria",
+    "license_url": "https://github.com/soda-inria/tabicl",
+    "license_note": "Permissive open-source license, no use-case restrictions (verified in the installed tabicl package LICENSE file). Weights are downloaded at runtime by the package and are not bundled here. TabPFN-3/3.5 was deliberately NOT used: its weights carry a non-commercial license.",
+    "subsample": {
+      "rows_drawn": 6000,
+      "train_rows": 5000,
+      "test_rows": 1000,
+      "random_state": 42,
+      "note": "Stratified subsample of the full 253,680-row CDC dataset; same split and same test rows for both models. A 10,000/2,000 subsample was tried first and the run was killed by the Linux OOM killer during TabICL prediction on this 1.5-CPU / 6 GB machine, so the comparison uses 5,000 train / 1,000 test. TabICL conditions on the training rows in one forward pass (in-context learning) rather than training weights."
+    },
+    "tabiclv2": {
+      "accuracy": 0.842,
+      "macro_f1": 0.3779,
+      "per_class": {
+        "0": {
+          "precision": 0.8571,
+          "recall": 0.9762,
+          "f1": 0.9128,
+          "support": 842
+        },
+        "1": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 18
+        },
+        "2": {
+          "precision": 0.4878,
+          "recall": 0.1429,
+          "f1": 0.221,
+          "support": 140
+        }
+      },
+      "roc_auc_ovr": {
+        "0": 0.783,
+        "1": 0.6275,
+        "2": 0.7961
+      },
+      "roc_auc_ovr_macro": 0.7355,
+      "brier_multiclass": 0.0782,
+      "fit_seconds": 0.9,
+      "predict_seconds": 1092.0
+    },
+    "logistic_regression_baseline": {
+      "accuracy": 0.583,
+      "macro_f1": 0.3745,
+      "per_class": {
+        "0": {
+          "precision": 0.9441,
+          "recall": 0.6021,
+          "f1": 0.7353,
+          "support": 842
+        },
+        "1": {
+          "precision": 0.0099,
+          "recall": 0.1111,
+          "f1": 0.0181,
+          "support": 18
+        },
+        "2": {
+          "precision": 0.2846,
+          "recall": 0.5286,
+          "f1": 0.37,
+          "support": 140
+        }
+      },
+      "roc_auc_ovr": {
+        "0": 0.7741,
+        "1": 0.6194,
+        "2": 0.7687
+      },
+      "roc_auc_ovr_macro": 0.7207,
+      "brier_multiclass": 0.1783,
+      "fit_seconds": 0.3,
+      "predict_seconds": 0.0
+    }
+  }
 }
