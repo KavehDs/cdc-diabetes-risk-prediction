@@ -39,6 +39,14 @@ def load_model():
 st.set_page_config(page_title="Diabetes Risk — CDC BRFSS 2015",
                    layout="centered")
 st.title("Diabetes Risk Prediction (CDC BRFSS 2015)")
+# Sliders must stay left-to-right even in RTL browsers (e.g. Persian):
+# without this fix, dragging the thumb right decreases the value.
+st.markdown(
+    """<style>
+    [data-testid="stSlider"] { direction: ltr !important; }
+    </style>""",
+    unsafe_allow_html=True,
+)
 st.warning("⚠️ Educational demo only — not a medical diagnosis tool. "
            "This model uses self-reported survey answers, not lab results, "
            "and its prediabetes detection is poor. See README.md.")
