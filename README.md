@@ -1,5 +1,7 @@
 # CDC Diabetes Risk Prediction
 
+🚀 **Live demo:** [Try the app](https://dmpcges8zubzu8psyweucw.streamlit.app/)
+
 Predict diabetes status from self-reported health indicators — no
 diabetes, prediabetes, or diabetes — and be honest about how hard the
 rare class is to catch.
